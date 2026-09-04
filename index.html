@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalvister — Streamer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#d1eece;
+    --bg-panel:#E4EFDA;
+    --bg-panel-2:#e7e4a2;
+    --border:#C7DAB8;
+    --ink:#17261A;
+    --ink-dim:#a8b1a6;
+    --accent:#000100;
+    --accent-soft:#1a2b13;
+    --on-accent:#F4FAEF;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Space Grotesk', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  ::selection{background:var(--accent);color:var(--on-accent);}
+  a{color:inherit;}
+  .mono{font-family:'JetBrains Mono', monospace;}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 32px;}
+
+  /* ---------- NAV ---------- */
+  nav{padding:28px 0;border-bottom:1px solid var(--border);}
+  nav .wrap{display:flex;justify-content:space-between;align-items:center;}
+  .logo{font-weight:700;font-size:1.15rem;letter-spacing:-0.01em;color:var(--accent);}
+  .nav-links{display:flex;gap:28px;list-style:none;font-size:0.92rem;color:var(--ink-dim);}
+  .nav-links a{text-decoration:none;transition:color .15s;}
+  .nav-links a:hover{color:var(--accent);}
+  @media (max-width:640px){ .nav-links{display:none;} }
+
+  /* ---------- HERO ---------- */
+  header.hero{position:relative;padding:96px 0 80px;overflow:hidden;border-bottom:1px solid var(--border);}
+  .contours{position:absolute;inset:0;opacity:.6;pointer-events:none;}
+  .hero .wrap{position:relative;z-index:1;}
+
+  .status-chip{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:7px 14px;border:1px solid var(--border);border-radius:100px;
+    font-size:0.8rem;color:var(--ink-dim);margin-bottom:36px;background:var(--bg-panel);
+  }
+  .status-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);}
+  .status-chip.live .status-dot{
+    box-shadow:0 0 0 0 rgba(63,138,59,.5);
+    animation:pulse 2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(63,138,59,.4);}
+    70%{box-shadow:0 0 0 9px rgba(63,138,59,0);}
+    100%{box-shadow:0 0 0 0 rgba(63,138,59,0);}
+  }
+
+  .hero h1{
+    font-size:clamp(3.2rem, 9vw, 6.4rem);
+    font-weight:700;letter-spacing:-0.03em;line-height:0.95;
+    opacity:0;transform:translateY(14px);
+    animation:rise .7s ease forwards .1s;
+  }
+  .hero p.tag{
+    margin-top:22px;max-width:480px;font-size:1.08rem;color:var(--ink-dim);
+    opacity:0;transform:translateY(14px);
+    animation:rise .7s ease forwards .25s;
+  }
+  @keyframes rise{ to{opacity:1;transform:translateY(0);} }
+
+  .hero-meta{margin-top:44px;display:flex;gap:36px;flex-wrap:wrap;}
+  .hero-meta div{font-size:0.85rem;color:var(--accent-soft);}
+  .hero-meta strong{
+    display:block;font-family:'JetBrains Mono', monospace;
+    font-size:1.3rem;color:var(--ink);font-weight:500;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  .section{padding:76px 0;border-bottom:1px solid var(--border);}
+  .section h2{font-size:1.7rem;font-weight:600;letter-spacing:-0.01em;max-width:420px;}
+  .section .lede{color:var(--ink-dim);margin-top:12px;max-width:460px;font-size:0.98rem;}
+
+  /* ---------- SCHEDULE ---------- */
+  .schedule-grid{
+    margin-top:44px;display:grid;grid-template-columns:repeat(7, 1fr);
+    border-top:1px solid var(--border);border-left:1px solid var(--border);
+  }
+  .day{
+    border-right:1px solid var(--border);border-bottom:1px solid var(--border);
+    padding:18px 14px;min-height:130px;
+    display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .day.on{background:var(--bg-panel);}
+  .day .dname{font-size:0.78rem;color:var(--ink-dim);}
+  .day .dgame{font-size:0.86rem;margin-top:10px;font-weight:500;}
+  .day .dtime{font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--accent);}
+  .day.off .dgame{color:var(--ink-dim);}
+  @media (max-width:760px){ .schedule-grid{grid-template-columns:repeat(2, 1fr);} }
+
+  /* ---------- STATS ---------- */
+  .stats{
+    margin-top:44px;display:grid;grid-template-columns:repeat(4, 1fr);
+    gap:1px;background:var(--border);border:1px solid var(--border);
+  }
+  .stat{background:var(--bg);padding:26px 22px;}
+  .stat .n{font-family:'JetBrains Mono', monospace;font-size:1.9rem;color:var(--accent);font-weight:500;}
+  .stat .l{font-size:0.82rem;color:var(--ink-dim);margin-top:6px;}
+  @media (max-width:640px){ .stats{grid-template-columns:repeat(2,1fr);} }
+
+  /* ---------- CLIPS ---------- */
+  .clip-grid{
+    margin-top:44px;display:grid;
+    grid-template-columns:1.4fr 1fr 1fr;grid-template-rows:auto auto;gap:14px;
+  }
+  .clip{
+    position:relative;border:1px solid var(--border);padding:18px;min-height:180px;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    background:linear-gradient(160deg, var(--bg-panel), var(--bg-panel-2));
+    transition:border-color .15s;
+  }
+  .clip:hover{border-color:var(--accent-soft);}
+  .clip:nth-child(1){grid-row:1 / 3;min-height:376px;}
+  .clip .ctag{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--accent);}
+  .clip .ctitle{margin-top:8px;font-size:1rem;font-weight:600;}
+  .clip .cmeta{margin-top:4px;font-size:0.78rem;color:var(--ink-dim);}
+  @media (max-width:760px){
+    .clip-grid{grid-template-columns:1fr;}
+    .clip:nth-child(1){grid-row:auto;min-height:180px;}
+  }
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{margin-top:44px;display:grid;grid-template-columns:1.2fr 1fr;gap:60px;}
+  .about-grid p{color:var(--ink-dim);font-size:1rem;max-width:460px;}
+  .about-grid p + p{margin-top:16px;}
+  .loadout{list-style:none;border-top:1px solid var(--border);}
+  .loadout li{
+    display:flex;justify-content:space-between;padding:14px 0;
+    border-bottom:1px solid var(--border);font-size:0.92rem;
+  }
+  .loadout li span:first-child{color:var(--ink-dim);}
+  .loadout li span:last-child{font-family:'JetBrains Mono',monospace;color:var(--accent);font-size:0.85rem;}
+  @media (max-width:760px){ .about-grid{grid-template-columns:1fr;gap:36px;} }
+
+  /* ---------- CTA ---------- */
+  .cta-section{padding:80px 0;text-align:center;}
+  .cta-section h2{
+    font-size:clamp(1.8rem, 4vw, 2.6rem);max-width:520px;margin:0 auto;
+    font-weight:600;letter-spacing:-0.01em;
+  }
+  .btn{
+    display:inline-block;margin-top:32px;padding:15px 34px;
+    background:var(--accent);color:var(--on-accent);
+    font-weight:600;font-size:0.95rem;border-radius:6px;text-decoration:none;
+    transition:transform .15s ease, background .15s;
+  }
+  .btn:hover{background:#357530;transform:translateY(-2px);}
+
+  /* ---------- FOOTER ---------- */
+  footer{padding:36px 0;}
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+  footer .socials{display:flex;gap:22px;list-style:none;font-size:0.85rem;color:var(--ink-dim);}
+  footer .socials a{text-decoration:none;transition:color .15s;}
+  footer .socials a:hover{color:var(--accent);}
+  footer .copy{font-size:0.78rem;color:var(--ink-dim);font-family:'JetBrains Mono',monospace;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;}
+  }
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="logo">KALVISTER</div>
+    <ul class="nav-links">
+      <li><a href="#horario">Horario</a></li>
+      <li><a href="#clips">Clips</a></li>
+      <li><a href="#sobre-mi">Sobre mí</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <svg class="contours" viewBox="0 0 1080 400" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M -50 320 C 150 280, 300 380, 500 300 C 700 220, 850 340, 1130 260" stroke="#CFE3C2" stroke-width="1.5" fill="none"/>
+    <path d="M -50 350 C 180 310, 320 400, 540 330 C 740 260, 880 370, 1130 300" stroke="#CFE3C2" stroke-width="1.5" fill="none"/>
+    <path d="M -50 380 C 200 340, 360 410, 580 360 C 780 310, 900 400, 1130 340" stroke="#CFE3C2" stroke-width="1.5" fill="none"/>
+    <path d="M -50 40 C 200 10, 380 70, 600 30 C 800 -5, 950 60, 1130 20" stroke="#CFE3C2" stroke-width="1.5" fill="none"/>
+    <path d="M -50 70 C 220 40, 400 100, 620 60 C 820 25, 970 90, 1130 50" stroke="#CFE3C2" stroke-width="1.5" fill="none"/>
+  </svg>
+  <div class="wrap">
+    <div class="status-chip live">
+      <span class="status-dot"></span>
+      <span class="mono">directos lunes, miércoles y viernes · 7:00–11:00</span>
+    </div>
+    <h1>KALVISTER</h1>
+    <p class="tag">Directos entre semana, grabación los sábados y contenido en TikTok toda la semana.</p>
+    <div class="hero-meta">
+      <div><strong>+500</strong>seguidores</div>
+      <div><strong>+80</strong>horas en directo</div>
+      <div><strong>+50</strong>juegos completados</div>
+    </div>
+  </div>
+</header>
+
+<section class="section" id="horario">
+  <div class="wrap">
+    <h2>Horario De streams</h2>
+    <p class="lede">Tres directos fijos entre semana, un domingo libre y días dedicados a estudiar y grabar.</p>
+    <div class="schedule-grid">
+      <div class="day on"><div class="dname">LUN</div><div><div class="dgame">Stream</div><div class="dtime">9:00 a:m  –12:00 p:m</div></div></div>
+      <div class="day off"><div class="dname">MAR</div><div><div class="dgame">Día de estudio</div></div></div>
+      <div class="day on"><div class="dname">MIÉ</div><div><div class="dgame">Stream</div><div class="dtime">9:00 a:m –12:00 p:m</div></div></div>
+      <div class="day off"><div class="dname">JUE</div><div><div class="dgame">Día de estudio</div></div></div>
+      <div class="day on"><div class="dname">VIE</div><div><div class="dgame">Stream</div><div class="dtime">9:00 a:m -12:00 p:m</div></div></div>
+      <div class="day off"><div class="dname">SÁB</div><div><div class="dgame">Grabación de videos para youtube</div></div></div>
+      <div class="day on"><div class="dname">DOM</div><div><div class="dgame">Stream</div><div class="dtime">Horario variable</div></div></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n">566</div><div class="l">Seguidores</div></div>
+      <div class="stat"><div class="n">80</div><div class="l">Horas en directo</div></div>
+      <div class="stat"><div class="n">555</div><div class="l">Juegos completados</div></div>
+      <div class="stat"><div class="n">50</div><div class="l">Suscriptores activos</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="clips">
+  <div class="wrap">
+    <h2>Momentos destacados</h2>
+    <p class="lede">Clips y Momentos Epicos de los ultimos directos.</p>
+    <div class="clip-grid">
+      <div class="clip">
+        <div class="ctag mono">DIRECTO</div>
+        <div class="ctitle">La partida mas pro que existe</div>
+        <div class="cmeta">Stream  · hace 3 días</div>
+      </div>
+      <div class="clip">
+        <div class="ctag mono">CLIP</div>
+        <div class="ctitle">La jugada que nadie vio venir</div>
+        <div class="cmeta">Stream · hace 2 horas</div>
+      </div>
+      <div class="clip">
+        <div class="ctag mono">TIKTOK</div>
+        <div class="ctitle">El resumen del directo en 60 segundos</div>
+        <div class="cmeta">Clip corto</div>
+      </div>
+      <div class="clip">
+        <div class="ctag mono">DOMINGO</div>
+        <div class="ctitle">Stream sorpresa sorprende a seguidores</div>
+        <div class="cmeta">Domingo · En 2 dias</div>
+      </div>
+      <div class="clip">
+        <div class="ctag mono">DETRÁS DE CÁMARA</div>
+        <div class="ctitle">Grabando los videos de la semana</div>
+        <div class="cmeta">Sábado · Mañna</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="sobre-mi">
+  <div class="wrap">
+    <div class="about-grid">
+      <div>
+        <h2>Sobre mí</h2>
+        <p>Soy Kalvister. Un nuevo streamer y creador de contenido, Transmito principalmente en TikTok, con directos muy divertidos  y contenido sensacional. Entre stream y stream disfruto con mis seguidores.</p>
+        <p>El domingo es el día libre del horario: streams sin hora fija, simplemente aparezco en directo de la nada.</p>
+      </div>
+      <ul class="loadout">
+        <li><span>Plataforma principal</span><span>TikTok</span></li>
+        <li><span>Directos</span><span>Lun / Mié / Vie</span></li>
+        <li><span>Grabación</span><span>Sábado</span></li>
+        <li><span>Estudio</span><span>Mar / Jue</span></li>
+        <li><span>Domingo</span><span>Horario libre</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="contacto">
+  <div class="wrap">
+    <h2>Sígueme en TikTok para no perderte los directos</h2>
+    <a class="btn" href="#">Ver mi TikTok</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <ul class="socials">
+      <li><a href="#">TikTok</a></li>
+    </ul>
+    <div class="copy">© 2026 Kalvister</div>
+  </div>
+</footer>
+
+</body>
+</html>
